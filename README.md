@@ -38,3 +38,63 @@ Kaggle auth: ~/.kaggle/kaggle.json (legacy format — the newer KAGGLE_API_TOKEN
 import_kaggle.py: Takes a folder of per-ticker .txt files + a comma-separated ticker list, summarizes each into one paragraph, dedupes via checking existing ChromaDB IDs before adding
 import_news.py: Reads Combined_News_DJIA.csv, groups headlines by week, summarizes up/down day counts + sample headlines per week
 Fundamentals importer: Reads financials.csv (S&P 500 companies), one row per company, converts each into a sentence covering price/PE/dividend/EPS/market cap/EBITDA 
+
+This section covers everything needed to get LEDGER running from a completely fresh machine — no prior setup assumed.
+1. Start the Ollama container
+bashjetson-containers run dustynv/ollama:r36.3.0
+bashdocker ps
+Note the value under NAMES (e.g. jetson_container_20260714_092542) — you'll need it for every docker exec command below.
+
+2. Verify (or rebuild) the ledger model
+bashdocker exec -it <container_name> ollama list
+You should see ledger:latest, llama3.2:1b, and nomic-embed-text:latest. If ledger is missing, rebuild it:
+bashdocker exec -it <container_name> sh
+Inside the container:
+bashcat > Modelfile << 'EOF'
+FROM llama3.2:1b
+SYSTEM """
+You are LEDGER, Lucas's investment research assistant.
+You are precise, cite your sources from CONTEXT, and never invent numbers.
+If context is insufficient, say so explicitly.
+Always note this is not licensed financial advice.
+"""
+PARAMETER temperature 0.3
+PARAMETER num_ctx 2048
+EOF
+ollama create ledger -f Modelfile
+exit
+Note: the base model is llama3.2:1b, not llama3.1:8b. The larger model caused power-related crashes on the Jetson Orin under inference load
+
+3. Install Python dependencies (on the host, not in the container)
+bashcd ~/invest_app
+pip3 install flask chromadb ollama pandas pypdf kaggle
+
+4. Launch the web app
+bashpython3 app.py
+Leave this terminal running — it shows request logs and errors as you use the app.
+
+5. Open the UI
+In a browser, go to:
+http://<orin-ip>:5000
+Find <orin-ip> with:
+baship a
+Look for the inet address under wlan0 (typically 192.168.137.x if connecting through a phone/computer hotspot).
+
+6. Add knowledge to the system (optional, but this is what makes LEDGER useful)
+Upload a document directly through the UI — open the Settings panel, use the file upload field, and it's automatically chunked and embedded into ChromaDB.
+Import stock price history from Kaggle:
+bashkaggle datasets download -d borismarjanovic/price-volume-data-for-all-us-stocks-etfs -p ~/invest_app/kaggle_data --unzip
+python3 import_kaggle.py ~/invest_app/kaggle_data/Stocks --tickers AAPL,NVDA,TSLA,MSFT,GOOGL --collection personal_thesis
+(swap in whatever tickers you want — replace the list after --tickers)
+Import market news summaries:
+bashkaggle datasets download -d aaron7sun/stocknews -p ~/invest_app/kaggle_data/news --unzip
+python3 import_news.py
+Import company fundamentals (P/E, EPS, market cap, etc.):
+bashkaggle datasets download -d paytonfisher/sp-500-companies-with-financial-information -p ~/invest_app/kaggle_data/fundamentals --unzip
+python3 import_fundamentals.py
+All three importers check existing ChromaDB entries before adding, so re-running them is safe and won't create duplicates.
+Kaggle authentication (one-time setup)
+Download a legacy kaggle.json API key from kaggle.com → Settings → API, then:
+bashmkdir -p ~/.kaggle
+mv ~/kaggle.json ~/.kaggle/kaggle.json
+chmod 600 ~/.kaggle/kaggle.json
