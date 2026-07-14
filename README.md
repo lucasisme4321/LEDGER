@@ -3,7 +3,7 @@ LEDGER is my NVIDIA project, focused on implementing AI into investment decision
 //put image here for future
 
 
-The AI system used is a RAG (Retrieval-Augmented Generation). This AI model is much diferent than other for multiple reasons. Instead of having the knowledge based being changed sparatically, the user has control of its knowledge leading to realiable and percise answers. The chatbot pulls information from databases and uses the knowledge to answer prompts. 
+LEDGER is a RAG (Retrieval-Augmented Generation). This AI model is much diferent than other for multiple reasons. Instead of having the knowledge based being changed sparatically, the user has control of its knowledge leading to realiable and percise answers. The chatbot pulls information from databases and uses the knowledge to answer prompts. 
 The AI uses a three-layer structure. The Modelfile or persona layer is a plain-text config: FROM <base_model>, SYSTEM "...", PARAMETER key value
 ollama create ledger -f Modelfile builds a new named model (ledger) that has the system prompt permanently baked in. Without this step,  the system prompt would need to be sent as part of every single API request — the Modelfile makes it persistent and reusable. The Modelfile parameters are as follows: temperature 0.3 (lower = more deterministic/less random output) and num_ctx 2048 (which determines the amount of contex the model can consider).
 The base model of LEDGER has been changed from llama3.1:8b to llama3.2:1b, as the model kept ceashed because the jetson could not handle the amount of power required.
