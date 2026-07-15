@@ -41,11 +41,12 @@ Fundamentals importer: Reads financials.csv (S&P 500 companies), one row per com
 
 This section covers everything needed to get LEDGER running from a completely fresh machine — no prior setup assumed.
 1. Start the Ollama container
-bashjetson-containers run dustynv/ollama:r36.3.0
-bashdocker ps
+jetson-containers run dustynv/ollama:r36.3.0
+
+2. bashdocker ps
 Note the value under NAMES (e.g. jetson_container_20260714_092542) — you'll need it for every docker exec command below.
 
-2. Verify (or rebuild) the ledger model
+3. Verify (or rebuild) the ledger model
 bashdocker exec -it <container_name> ollama list
 You should see ledger:latest, llama3.2:1b, and nomic-embed-text:latest. If ledger is missing, rebuild it:
 bashdocker exec -it <container_name> sh
@@ -65,22 +66,22 @@ ollama create ledger -f Modelfile
 exit
 Note: the base model is llama3.2:1b, not llama3.1:8b. The larger model caused power-related crashes on the Jetson Orin under inference load
 
-3. Install Python dependencies (on the host, not in the container)
+4. Install Python dependencies (on the host, not in the container)
 bashcd ~/invest_app
 pip3 install flask chromadb ollama pandas pypdf kaggle
 
-4. Launch the web app
+5. Launch the web app
 bashpython3 app.py
 Leave this terminal running — it shows request logs and errors as you use the app.
 
-5. Open the UI
+6. Open the UI
 In a browser, go to:
 http://<orin-ip>:5000
 Find <orin-ip> with:
 baship a
 Look for the inet address under wlan0 (typically 192.168.137.x if connecting through a phone/computer hotspot).
 
-6. Add knowledge to the system (optional, but this is what makes LEDGER useful)
+7. Add knowledge to the system (optional, but this is what makes LEDGER useful)
 Upload a document directly through the UI — open the Settings panel, use the file upload field, and it's automatically chunked and embedded into ChromaDB.
 Import stock price history from Kaggle:
 bashkaggle datasets download -d borismarjanovic/price-volume-data-for-all-us-stocks-etfs -p ~/invest_app/kaggle_data --unzip
