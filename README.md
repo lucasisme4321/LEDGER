@@ -49,8 +49,8 @@ newgrp docker
 
 get your project files onto this machine (pick one)
 git clone <your_repo_url> ~/invest_app
-# OR if you don't have it in a repo yet, copy it from your other machine:
-# scp -r user@old_machine:~/invest_app ~/invest_app
+or if you don't have it in a repo yet, copy it from your other machine:
+scp -r user@old_machine:~/invest_app ~/invest_app
 
 manual step — cannot be scripted:
 go to kaggle.com -> Settings -> API -> Create New Token, download kaggle.json
