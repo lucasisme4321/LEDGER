@@ -45,18 +45,14 @@ Fundamentals importer: Reads financials.csv (S&P 500 companies), one row per com
 
 
 
-Before you run the code to get the app on your computer, most of the block below can be copy-pasted exactly as-is, but a few lines need to be edited first or they will fail: replace <your_repo_url> in the git clone line with your actual GitHub repo URL, or use the commented-out scp line instead if you're not using a repo; replace <container_name> in both docker exec lines with whatever docker ps prints under NAMES, since it changes every time the container restarts; and make sure kaggle.json has been manually downloaded from kaggle.com under Settings then API and placed in your home folder before the mv command runs, since that step can't be scripted. Lines starting with # are just comments and are safe to leave in. Everything between docker exec -it <container_name> sh and exit runs inside the Ollama container, not on your host machine.
+Before you run this: Most of the block below can be copy-pasted exactly as-is, but a few lines need to be edited first or they will fail. Replace <container_name> in both docker exec lines with whatever docker ps prints under NAMES, since it changes every time the container restarts. Make sure kaggle.json has been manually downloaded from kaggle.com under Settings then API and placed in your home folder before the mv command runs, since that step can't be scripted, and note that a new machine needs its own fresh token, it can't reuse one from another machine. Lines starting with # are just comments and are safe to leave in. Everything between docker exec -it <container_name> sh and exit runs inside the Ollama container, not on your host machine.
 
-Copy and paste section:
 sudo apt update
 sudo apt install -y python3-pip git docker.io
 sudo usermod -aG docker $USER
 newgrp docker
 
-# get your project files onto this machine (pick one)
-git clone <your_repo_url> ~/invest_app
-# OR if you don't have it in a repo yet, copy it from your other machine:
-# scp -r user@old_machine:~/invest_app ~/invest_app
+git clone https://github.com/lucasisme4321/LEDGER.git ~/invest_app
 
 # manual step — cannot be scripted:
 # go to kaggle.com -> Settings -> API -> Create New Token, download kaggle.json
