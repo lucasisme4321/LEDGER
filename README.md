@@ -53,10 +53,8 @@ sudo usermod -aG docker $USER
 newgrp docker
 
 git clone https://github.com/lucasisme4321/LEDGER.git ~/invest_app
+# manual step, go to kaggele.com, settings, api, create new token, download kaggle.json
 
-# manual step — cannot be scripted:
-# go to kaggle.com -> Settings -> API -> Create New Token, download kaggle.json
-# then move it into place:
 mkdir -p ~/.kaggle
 mv ~/kaggle.json ~/.kaggle/kaggle.json
 chmod 600 ~/.kaggle/kaggle.json
@@ -69,11 +67,11 @@ cd ~
 jetson-containers run dustynv/ollama:r36.3.0
 
 docker ps
-# copy the value under NAMES from the output above, use it below in place of <container_name>
+# copy the value under NAMES from the output above, use it below in the place of <container_name>
 
 docker exec -it <container_name> ollama list
+# if the ledger is missing from that lsit, rebuild it:
 
-# if ledger is missing from that list, rebuild it:
 docker exec -it <container_name> sh
 
 cat > Modelfile << 'EOF'
@@ -91,10 +89,10 @@ cd ~/invest_app
 pip3 install flask chromadb ollama pandas pypdf kaggle
 
 python3 app.py
-
 # find jetson ip:
 ip a
-# go to http://<jetson_ip>:5000 in a browser
+
+#go to http://<jetson_ip>:5000 in a browser
 
 kaggle datasets download -d borismarjanovic/price-volume-data-for-all-us-stocks-etfs -p ~/invest_app/kaggle_data --unzip
 python3 import_kaggle.py ~/invest_app/kaggle_data/Stocks --tickers AAPL,NVDA,TSLA,MSFT,GOOGL --collection personal_thesis
