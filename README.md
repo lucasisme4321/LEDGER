@@ -39,6 +39,15 @@ import_kaggle.py: Takes a folder of per-ticker .txt files + a comma-separated ti
 import_news.py: Reads Combined_News_DJIA.csv, groups headlines by week, summarizes up/down day counts + sample headlines per week
 Fundamentals importer: Reads financials.csv (S&P 500 companies), one row per company, converts each into a sentence covering price/PE/dividend/EPS/market cap/EBITDA 
 
+
+
+
+
+
+
+Before you run the code to get the app on your computer, most of the block below can be copy-pasted exactly as-is, but a few lines need to be edited first or they will fail: replace <your_repo_url> in the git clone line with your actual GitHub repo URL, or use the commented-out scp line instead if you're not using a repo; replace <container_name> in both docker exec lines with whatever docker ps prints under NAMES, since it changes every time the container restarts; and make sure kaggle.json has been manually downloaded from kaggle.com under Settings then API and placed in your home folder before the mv command runs, since that step can't be scripted. Lines starting with # are just comments and are safe to leave in. Everything between docker exec -it <container_name> sh and exit runs inside the Ollama container, not on your host machine.
+
+Copy and paste section:
 sudo apt update
 sudo apt install -y python3-pip git docker.io
 sudo usermod -aG docker $USER
