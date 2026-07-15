@@ -1,0 +1,8 @@
+kaggle.json
+kaggle_data/
+chroma_db/
+*.sqlite3
+__pycache__/
+*.pyc
+venv/
+.env

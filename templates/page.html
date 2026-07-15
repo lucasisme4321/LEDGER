@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEDGER — local investment terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="scanlines" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">◆</span>
+    <span class="brand-name">LEDGER</span>
+    <span class="brand-sub">local terminal</span>
+  </div>
+  <div class="status" id="ollama-status">
+    <span class="dot" id="status-dot"></span>
+    <span id="status-text">checking connection…</span>
+  </div>
+</header>
+
+<div class="ticker-strip" id="ticker-strip" aria-label="tracked tickers">
+  <div class="ticker-track" id="ticker-track">
+    <span class="ticker-empty">no tickers loaded yet — build your knowledge base below</span>
+  </div>
+</div>
+
+<main class="layout">
+
+  <aside class="panel sidebar">
+    <h2 class="panel-title">knowledge base</h2>
+    <p class="panel-desc">Pull data for the tickers you want the AI to know about. Rebuilding replaces what's stored.</p>
+
+    <label class="field-label" for="ticker-input">tickers (comma separated)</label>
+    <input id="ticker-input" class="text-input" type="text" placeholder="AAPL, GOOG, MSFT, AMZN" value="AAPL, GOOG, MSFT, AMZN">
+
+    <button id="build-btn" class="btn btn-primary">
+      <span id="build-btn-label">build knowledge base</span>
+    </button>
+    <div id="build-status" class="build-status" role="status"></div>
+
+    <div class="divider"></div>
+
+    <h2 class="panel-title">tracked</h2>
+    <ul class="tracked-list" id="tracked-list">
+      <li class="tracked-empty">nothing tracked yet</li>
+    </ul>
+  </aside>
+
+  <section class="panel chat-panel">
+    <div class="chat-log" id="chat-log">
+      <div class="msg msg-system">
+        <div class="msg-meta">SYSTEM</div>
+        <div class="msg-body">
+          Terminal ready. Build a knowledge base on the left, then ask about
+          any tracked ticker — performance, volatility, fundamentals.
+          This is a research aid, not licensed financial advice.
+        </div>
+      </div>
+    </div>
+
+    <form id="chat-form" class="chat-form" autocomplete="off">
+      <span class="prompt-caret">&gt;</span>
+      <input id="chat-input" class="chat-input" type="text" placeholder="ask about a tracked stock…" aria-label="Your question">
+      <button type="submit" class="btn btn-send" id="send-btn">send</button>
+    </form>
+  </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
