@@ -39,22 +39,19 @@ import_kaggle.py: Takes a folder of per-ticker .txt files + a comma-separated ti
 import_news.py: Reads Combined_News_DJIA.csv, groups headlines by week, summarizes up/down day counts + sample headlines per week
 Fundamentals importer: Reads financials.csv (S&P 500 companies), one row per company, converts each into a sentence covering price/PE/dividend/EPS/market cap/EBITDA 
 
-This section covers everything needed to get LEDGER running from a completely fresh machine, however, you will need to change <your_repo_url>, swap in your actual git URL (or use the scp line instead if the code isn't in a repo)
-The kaggle.json download — Kaggle requires you to log in and click "Create New Token" yourself, so that one file has to be grabbed manually before the script continues
-
 sudo apt update
 sudo apt install -y python3-pip git docker.io
 sudo usermod -aG docker $USER
 newgrp docker
 
-get your project files onto this machine (pick one)
+# get your project files onto this machine (pick one)
 git clone <your_repo_url> ~/invest_app
-or if you don't have it in a repo yet, copy it from your other machine:
-scp -r user@old_machine:~/invest_app ~/invest_app
+# OR if you don't have it in a repo yet, copy it from your other machine:
+# scp -r user@old_machine:~/invest_app ~/invest_app
 
-manual step — cannot be scripted:
-go to kaggle.com -> Settings -> API -> Create New Token, download kaggle.json
-then move it into place:
+# manual step — cannot be scripted:
+# go to kaggle.com -> Settings -> API -> Create New Token, download kaggle.json
+# then move it into place:
 mkdir -p ~/.kaggle
 mv ~/kaggle.json ~/.kaggle/kaggle.json
 chmod 600 ~/.kaggle/kaggle.json
@@ -67,11 +64,11 @@ cd ~
 jetson-containers run dustynv/ollama:r36.3.0
 
 docker ps
-copy the value under NAMES from the output above, use it below in place of <container_name>
+# copy the value under NAMES from the output above, use it below in place of <container_name>
 
 docker exec -it <container_name> ollama list
 
-if ledger is missing from that list, rebuild it:
+# if ledger is missing from that list, rebuild it:
 docker exec -it <container_name> sh
 
 cat > Modelfile << 'EOF'
@@ -90,9 +87,9 @@ pip3 install flask chromadb ollama pandas pypdf kaggle
 
 python3 app.py
 
-find jetson ip:
+# find jetson ip:
 ip a
-go to http://<jetson_ip>:5000 in a browser
+# go to http://<jetson_ip>:5000 in a browser
 
 kaggle datasets download -d borismarjanovic/price-volume-data-for-all-us-stocks-etfs -p ~/invest_app/kaggle_data --unzip
 python3 import_kaggle.py ~/invest_app/kaggle_data/Stocks --tickers AAPL,NVDA,TSLA,MSFT,GOOGL --collection personal_thesis
@@ -102,4 +99,3 @@ python3 import_news.py
 
 kaggle datasets download -d paytonfisher/sp-500-companies-with-financial-information -p ~/invest_app/kaggle_data/fundamentals --unzip
 python3 import_fundamentals.py
-
