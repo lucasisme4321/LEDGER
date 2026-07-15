@@ -39,63 +39,67 @@ import_kaggle.py: Takes a folder of per-ticker .txt files + a comma-separated ti
 import_news.py: Reads Combined_News_DJIA.csv, groups headlines by week, summarizes up/down day counts + sample headlines per week
 Fundamentals importer: Reads financials.csv (S&P 500 companies), one row per company, converts each into a sentence covering price/PE/dividend/EPS/market cap/EBITDA 
 
-This section covers everything needed to get LEDGER running from a completely fresh machine — no prior setup assumed.
-1. Start the Ollama container
+This section covers everything needed to get LEDGER running from a completely fresh machine, however, you will need to change <your_repo_url>, swap in your actual git URL (or use the scp line instead if the code isn't in a repo)
+The kaggle.json download — Kaggle requires you to log in and click "Create New Token" yourself, so that one file has to be grabbed manually before the script continues
+
+sudo apt update
+sudo apt install -y python3-pip git docker.io
+sudo usermod -aG docker $USER
+newgrp docker
+
+# get your project files onto this machine (pick one)
+git clone <your_repo_url> ~/invest_app
+# OR if you don't have it in a repo yet, copy it from your other machine:
+# scp -r user@old_machine:~/invest_app ~/invest_app
+
+# manual step — cannot be scripted:
+# go to kaggle.com -> Settings -> API -> Create New Token, download kaggle.json
+# then move it into place:
+mkdir -p ~/.kaggle
+mv ~/kaggle.json ~/.kaggle/kaggle.json
+chmod 600 ~/.kaggle/kaggle.json
+
+git clone https://github.com/dusty-nv/jetson-containers
+cd jetson-containers
+bash install.sh
+cd ~
+
 jetson-containers run dustynv/ollama:r36.3.0
 
-2. bashdocker ps
-Note the value under NAMES (e.g. jetson_container_20260714_092542) — you'll need it for every docker exec command below.
+docker ps
+# copy the value under NAMES from the output above, use it below in place of <container_name>
 
-3. Verify (or rebuild) the ledger model
-bashdocker exec -it <container_name> ollama list
-You should see ledger:latest, llama3.2:1b, and nomic-embed-text:latest. If ledger is missing, rebuild it:
-bashdocker exec -it <container_name> sh
-Inside the container:
-bashcat > Modelfile << 'EOF'
+docker exec -it <container_name> ollama list
+
+# if ledger is missing from that list, rebuild it:
+docker exec -it <container_name> sh
+
+cat > Modelfile << 'EOF'
 FROM llama3.2:1b
 SYSTEM """
-You are LEDGER, Lucas's investment research assistant.
-You are precise, cite your sources from CONTEXT, and never invent numbers.
-If context is insufficient, say so explicitly.
-Always note this is not licensed financial advice.
+You are LEDGER, Lucas's investment research assistant. You are precise, cite your sources from CONTEXT, and never invent numbers. If context is insufficient, say so explicitly. Always note this is not licensed financial advice.
 """
 PARAMETER temperature 0.3
 PARAMETER num_ctx 2048
 EOF
 ollama create ledger -f Modelfile
 exit
-Note: the base model is llama3.2:1b, not llama3.1:8b. The larger model caused power-related crashes on the Jetson Orin under inference load
 
-4. Install Python dependencies (on the host, not in the container)
-bashcd ~/invest_app
+cd ~/invest_app
 pip3 install flask chromadb ollama pandas pypdf kaggle
 
-5. Launch the web app
-bashpython3 app.py
-Leave this terminal running — it shows request logs and errors as you use the app.
+python3 app.py
 
-6. Open the UI
-In a browser, go to:
-http://<orin-ip>:5000
-Find <orin-ip> with:
-baship a
-Look for the inet address under wlan0 (typically 192.168.137.x if connecting through a phone/computer hotspot).
+# find jetson ip:
+ip a
+# go to http://<jetson_ip>:5000 in a browser
 
-7. Add knowledge to the system (optional, but this is what makes LEDGER useful)
-Upload a document directly through the UI — open the Settings panel, use the file upload field, and it's automatically chunked and embedded into ChromaDB.
-Import stock price history from Kaggle:
-bashkaggle datasets download -d borismarjanovic/price-volume-data-for-all-us-stocks-etfs -p ~/invest_app/kaggle_data --unzip
+kaggle datasets download -d borismarjanovic/price-volume-data-for-all-us-stocks-etfs -p ~/invest_app/kaggle_data --unzip
 python3 import_kaggle.py ~/invest_app/kaggle_data/Stocks --tickers AAPL,NVDA,TSLA,MSFT,GOOGL --collection personal_thesis
-(swap in whatever tickers you want — replace the list after --tickers)
-Import market news summaries:
-bashkaggle datasets download -d aaron7sun/stocknews -p ~/invest_app/kaggle_data/news --unzip
+
+kaggle datasets download -d aaron7sun/stocknews -p ~/invest_app/kaggle_data/news --unzip
 python3 import_news.py
-Import company fundamentals (P/E, EPS, market cap, etc.):
-bashkaggle datasets download -d paytonfisher/sp-500-companies-with-financial-information -p ~/invest_app/kaggle_data/fundamentals --unzip
+
+kaggle datasets download -d paytonfisher/sp-500-companies-with-financial-information -p ~/invest_app/kaggle_data/fundamentals --unzip
 python3 import_fundamentals.py
-All three importers check existing ChromaDB entries before adding, so re-running them is safe and won't create duplicates.
-Kaggle authentication (one-time setup)
-Download a legacy kaggle.json API key from kaggle.com → Settings → API, then:
-bashmkdir -p ~/.kaggle
-mv ~/kaggle.json ~/.kaggle/kaggle.json
-chmod 600 ~/.kaggle/kaggle.json
+
