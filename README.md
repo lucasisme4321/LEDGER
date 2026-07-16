@@ -47,6 +47,8 @@ Fundamentals importer: Reads financials.csv (S&P 500 companies), one row per com
 
 Before you run this: Most of the block below can be copy-pasted exactly as-is, but a few lines need to be edited first or they will fail. Replace <container_name> in both docker exec lines with whatever docker ps prints under NAMES, since it changes every time the container restarts. Make sure kaggle.json has been manually downloaded from kaggle.com under Settings then API and placed in your home folder before the mv command runs, since that step can't be scripted, and note that a new machine needs its own fresh token, it can't reuse one from another machine. Lines starting with # are just comments and are safe to leave in. Everything between docker exec -it <container_name> sh and exit runs inside the Ollama container, not on your host machine.
 
+READ THE LINES HERE! IF YOU DO NOT IT WILL NOT WORK!
+
 sudo apt update
 sudo apt install -y python3-pip git docker.io
 sudo usermod -aG docker $USER
