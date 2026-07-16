@@ -83,7 +83,7 @@ DO NOT COPY THIS: copy the value under NAMES from the output above, use it below
 
 
 docker exec -it <container_name> ollama list
-dont copy this: if the ledger is missing from that lsit, rebuild it:
+DO NOT COPY THIS: if the ledger is missing from that lsit, rebuild it:
 
 docker exec -it <container_name> sh
 
