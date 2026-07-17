@@ -1,6 +1,5 @@
 LEDGER is my NVIDIA project, focused on implementing AI into investment decisions. It is an AI investment research assistant, which runs on you own hardware. 
 
-//put image here for future
 
 
 LEDGER is a RAG (Retrieval-Augmented Generation). This AI model is much diferent than other for multiple reasons. Instead of having the knowledge based being changed sparatically, the user has control of its knowledge leading to realiable and percise answers. The chatbot pulls information from databases and uses the knowledge to answer prompts. 
