@@ -69,8 +69,11 @@ mv ~/kaggle.json ~/.kaggle/kaggle.json
 chmod 600 ~/.kaggle/kaggle.json
 
 git clone https://github.com/dusty-nv/jetson-containers
+
 cd jetson-containers
+
 bash install.sh
+
 cd ~
 
 jetson-containers run dustynv/ollama:r36.3.0
